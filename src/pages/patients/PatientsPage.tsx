@@ -1,6 +1,6 @@
 import { Activity, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, HeartPulse, LayoutDashboard, LogOut, Menu, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Stethoscope, UserRound, Users, X, AlertCircle, ArrowUpRight, Paperclip, Save, CheckCircle2, FilePlus2, SlidersHorizontal, Bell, CalendarCheck, Filter, Pencil, Eye, Download, LockKeyhole } from "lucide-react";
 import type { Consultation, Patient } from "../../types";
-import { formatDate, fullName } from "../../utils/formatters";
+import { formatDate, fullName, initials } from "../../utils/formatters";
 import { PageTitle } from "../../components/shared/PageTitle";
 import { EmptyState } from "../../components/shared/EmptyState";
 import { StatusPill } from "../../components/shared/StatusPill";
