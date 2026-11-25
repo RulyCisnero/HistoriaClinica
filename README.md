@@ -1,33 +1,53 @@
-# Historia Clínica
+# Demo frontend — Historia Clínica
 
-Sistema web de historia clínica y gestión de agenda para un consultorio compartido por dos profesionales: Urología y Reumatología.
+Primera versión interactiva de la demo del consultorio compartido por Urología y Reumatología.
 
-## Alcance
+## Requisitos
 
-Aplicación de uso interno para los dos médicos. No es un sistema multiinstitución ni contempla registro público de pacientes, recepción o administración general.
+- Node.js 20 o superior (recomendado).
+- npm.
 
-- Cada profesional accede únicamente a sus pacientes, agenda, consultas y documentos.
-- Los registros clínicos se mantienen separados por profesional/especialidad.
-- La misma persona puede estar registrada con ambos médicos, con historias independientes.
-- La aplicación estará pensada para navegador de escritorio y será adaptable a móviles.
+## Ejecutar localmente
 
-## Tecnologías previstas
+```bash
+npm install
+npm run dev
+```
 
-- Frontend: React, TypeScript, Vite y Tailwind CSS.
-- Backend: Node.js, Express y TypeScript.
-- Base de datos: PostgreSQL.
-- Archivos clínicos: almacenamiento privado con acceso controlado.
+Vite mostrará una URL local, normalmente `http://localhost:5173`.
 
-La selección final de autenticación, despliegue y almacenamiento queda documentada como decisión técnica pendiente.
+Para validar la compilación:
 
-## Documentación
+```bash
+npm run build
+npm run preview
+```
 
-- [Requerimientos](docs/requerimientos.md)
-- [Decisiones funcionales](docs/decisiones.md)
-- [Pantallas y navegación](docs/pantallas.md)
-- [Modelo de datos inicial](docs/modelo-datos.md)
-- [Pendientes de validación](docs/pendientes.md)
+## Qué incluye esta iteración
 
-## Estado
+- Navegación principal: Inicio, Agenda, Pacientes, Consultas, Documentos y Configuración.
+- Selector de profesional/especialidad para recorrer la demo.
+- Panel de inicio con resumen de agenda y acciones rápidas.
+- Agenda diaria con creación de turnos, confirmación e inicio de consulta.
+- Alta y búsqueda de pacientes.
+- Ficha de paciente con resumen, antecedentes, historia clínica y documentos.
+- Consultas con borradores, edición, vista previa y finalización.
+- Evoluciones finalizadas en modo lectura y registro de rectificaciones de demostración.
+- Diseño adaptable a escritorio y móvil.
 
-Etapa inicial: definición y documentación. Aún no existe una aplicación funcional ni persistencia de datos. Los prototipos previos son demostraciones visuales con datos ficticios.
+## Límites importantes
+
+Esta entrega es exclusivamente una demostración frontend:
+
+- Los datos son ficticios.
+- Los cambios viven en el estado de la aplicación y se pierden al recargar.
+- No hay autenticación real ni autorización en servidor.
+- No hay API, PostgreSQL ni almacenamiento de archivos.
+- Las acciones de configuración y archivos que todavía no tienen backend muestran mensajes informativos.
+- No utilizar para registrar ni tratar información real de pacientes.
+
+La separación real de datos entre profesionales, auditoría, protección de archivos, persistencia y controles de seguridad deben implementarse y probarse en backend antes de cualquier uso clínico.
+
+## Documentación funcional
+
+Consultar `docs/requerimientos.md`, `docs/decisiones.md`, `docs/pantallas.md` y `docs/modelo-datos.md`.
