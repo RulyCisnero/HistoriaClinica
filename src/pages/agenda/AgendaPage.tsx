@@ -1,4 +1,4 @@
-import { Activity, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, HeartPulse, LayoutDashboard, LogOut, Menu, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Stethoscope, UserRound, Users, X, AlertCircle, ArrowUpRight, Paperclip, Save, CheckCircle2, FilePlus2, SlidersHorizontal, Bell, CalendarCheck, Filter, Pencil, Eye, Download, LockKeyhole } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import type { Appointment, AppointmentStatus, Patient } from "../../types";
 import { today } from "../../data/mockData";
 import { fullName, formatDate, patientById } from "../../utils/formatters";
