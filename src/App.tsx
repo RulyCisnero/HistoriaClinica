@@ -1,6 +1,6 @@
 import { CalendarCheck, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronRight, Eye, HeartPulse, LockKeyhole, Menu, MoreHorizontal, Plus, Save, ShieldCheck, X, AlertCircle, Bell } from "lucide-react";
-import type { Appointment, AppointmentStatus, Consultation, Patient, Section, Specialty } from "./types";
-import { initialPatients, initialAppointments, initialConsultations, rheumPatients, rheumAppointments, rheumConsultations, today } from "./data/mockData";
+import type { Appointment, AppointmentStatus, ClinicalDocument, Consultation, Patient, Section, Specialty } from "./types";
+import { initialPatients, initialAppointments, initialConsultations, initialDocuments, rheumPatients, rheumAppointments, rheumConsultations, today } from "./data/mockData";
 import { fullName, formatDate, patientById } from "./utils/formatters";
 import { navItems } from "./data/navigation";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
@@ -8,6 +8,7 @@ import { AgendaPage } from "./pages/agenda/AgendaPage";
 import { PatientsPage, PatientProfile } from "./pages/patients/PatientsPage";
 import { ConsultationsPage, consultationFields, ConsultationEditor, ConsultationReadOnly } from "./pages/consultations/ConsultationsPage";
 import { DocumentsPage } from "./pages/documents/DocumentsPage";
+import { DocumentUploadModal } from "./components/documents/DocumentUploadModal";
 import { SettingsPage } from "./pages/settings/SettingsPage";
 import { Modal } from "./components/shared/Modal";
 import { FormField } from "./components/shared/FormField";
@@ -21,12 +22,15 @@ export default function App() {
   const [patientsBySpecialty, setPatientsBySpecialty] = useState<Record<Specialty, Patient[]>>({ Urología: initialPatients, Reumatología: rheumPatients });
   const [appointmentsBySpecialty, setAppointmentsBySpecialty] = useState<Record<Specialty, Appointment[]>>({ Urología: initialAppointments, Reumatología: rheumAppointments });
   const [consultationsBySpecialty, setConsultationsBySpecialty] = useState<Record<Specialty, Consultation[]>>({ Urología: initialConsultations, Reumatología: rheumConsultations });
+  const [documentsBySpecialty, setDocumentsBySpecialty] = useState<Record<Specialty, ClinicalDocument[]>>({ Urología: initialDocuments, Reumatología: [] });
   const patients = patientsBySpecialty[specialty];
   const appointments = appointmentsBySpecialty[specialty];
   const consultations = consultationsBySpecialty[specialty];
+  const documents = documentsBySpecialty[specialty];
   const setPatients = (update: Patient[] | ((current: Patient[]) => Patient[])) => setPatientsBySpecialty(current => ({ ...current, [specialty]: typeof update === "function" ? update(current[specialty]) : update }));
   const setAppointments = (update: Appointment[] | ((current: Appointment[]) => Appointment[])) => setAppointmentsBySpecialty(current => ({ ...current, [specialty]: typeof update === "function" ? update(current[specialty]) : update }));
   const setConsultations = (update: Consultation[] | ((current: Consultation[]) => Consultation[])) => setConsultationsBySpecialty(current => ({ ...current, [specialty]: typeof update === "function" ? update(current[specialty]) : update }));
+  const setDocuments = (update: ClinicalDocument[] | ((current: ClinicalDocument[]) => ClinicalDocument[])) => setDocumentsBySpecialty(current => ({ ...current, [specialty]: typeof update === "function" ? update(current[specialty]) : update }));
   const [selectedPatient, setSelectedPatient] = useState<number | null>(null);
   const [patientTab, setPatientTab] = useState<"Resumen" | "Historia clínica" | "Antecedentes" | "Documentos">("Resumen");
   const [search, setSearch] = useState("");
@@ -44,6 +48,8 @@ export default function App() {
   const [patientDraft, setPatientDraft] = useState({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "", insuranceProvider: "", insurancePlan: "", memberNumber: "" });
   const [appointmentDraft, setAppointmentDraft] = useState({ patientId: "1", date: today, time: "13:00", reason: "" });
   const [documentSearch, setDocumentSearch] = useState("");
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
+  const [documentPatientId, setDocumentPatientId] = useState<number | undefined>(undefined);
 
   const doctor = specialty === "Urología"
     ? { name: "Dr. Martín López", role: "Especialista en Urología", initials: "ML", color: "blue" }
@@ -59,6 +65,8 @@ export default function App() {
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2600); };
   const go = (target: Section) => { setSection(target); setSelectedPatient(null); setMobileNav(false); };
+  const openDocumentUpload = (patientId?: number) => { setDocumentPatientId(patientId); setShowDocumentUpload(true); };
+  const addClinicalDocument = (document: ClinicalDocument) => { setDocuments(items => [document, ...items]); setShowDocumentUpload(false); setDocumentPatientId(undefined); notify("Documento adjuntado y vinculado correctamente."); };
   const updateAppointment = (id: number, status: AppointmentStatus) => {
     setAppointments(items => items.map(a => a.id === id ? { ...a, status } : a));
     notify(`Turno actualizado: ${status.toLowerCase()}.`);
@@ -138,12 +146,12 @@ export default function App() {
     <main className="main-area">
       <header className="topbar"><div className="topbar-left"><button className="icon-button mobile-menu" onClick={() => setMobileNav(true)}><Menu size={20} /></button><span className="breadcrumb">Consultorio <ChevronRight size={14} /> <strong>{section}</strong></span></div><div className="topbar-right"><span className="today-label"><CalendarDays size={15} /> Martes, 24 de noviembre de 2026</span><button className="icon-button notification" onClick={() => notify("No tenés notificaciones nuevas.")}><Bell size={18} /><i /></button><div className="avatar tiny">{doctor.initials}</div></div></header>
       <div className="page-content">
-        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onAddCoverage={() => setShowCoverageForm(true)} onRectify={setRectify} /> :
+        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} documents={documents.filter(document => document.patientId === selected.id)} onUploadDocument={() => openDocumentUpload(selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onAddCoverage={() => setShowCoverageForm(true)} onRectify={setRectify} /> :
           section === "Inicio" ? <DashboardPage doctor={doctor} appointments={todayAppointments} patients={patients} pending={pending} drafts={drafts} onNavigate={go} onPatient={setSelectedPatient} onAppointment={updateAppointment} onStart={openConsultation} onNewConsultation={() => { setConsultationPatientSearch(""); setShowConsultationPatientPicker(true); }} onNewAppointment={() => { setAppointmentDraft(current => ({ ...current, patientId: String(patients[0]?.id ?? "") })); setShowAppointmentForm(true); }} /> :
             section === "Agenda" ? <AgendaPage appointments={visibleAppointments} patients={patients} date={agendaDate} setDate={setAgendaDate} view={agendaView} setView={setAgendaView} onNew={() => setShowAppointmentForm(true)} onPatient={setSelectedPatient} onStatus={updateAppointment} onStart={openConsultation} /> :
               section === "Pacientes" ? <PatientsPage patients={visiblePatients} search={search} setSearch={setSearch} onNew={() => setShowPatientForm(true)} onOpen={setSelectedPatient} /> :
                 section === "Consultas" ? <ConsultationsPage consultations={consultations} patients={patients} onOpen={c => { setActiveConsultation(c); setShowConsultation(true); }} onRectify={setRectify} /> :
-                  section === "Documentos" ? <DocumentsPage patients={patients} search={documentSearch} setSearch={setDocumentSearch} /> :
+                  section === "Documentos" ? <DocumentsPage patients={patients} documents={documents} search={documentSearch} setSearch={setDocumentSearch} onUpload={() => openDocumentUpload()} /> :
                     <SettingsPage doctor={doctor} specialty={specialty} onSwitch={() => setSpecialty(s => s === "Urología" ? "Reumatología" : "Urología")} />}
       </div>
       <footer className="footer"><span>Clínica · Demo interactiva</span><span><LockKeyhole size={12} /> Datos ficticios · No utilizar para atención real</span></footer>
@@ -197,6 +205,7 @@ export default function App() {
       <div className="modal-actions">{activeConsultation.status === "Finalizada" ? <button className="btn secondary" onClick={() => setShowConsultation(false)}>Cerrar</button> : preview ? <><button className="btn secondary" onClick={() => setPreview(false)}>Volver a editar</button><button className="btn primary" onClick={finalizeConsultation}><CheckCircle2 size={16} /> Confirmar y finalizar</button></> : <><button className="btn secondary" onClick={saveDraft}><Save size={16} /> Guardar borrador</button><button className="btn primary" onClick={() => setPreview(true)}><Eye size={16} /> Vista previa</button></>}</div>
     </Modal>}
     {rectify && <Modal title="Rectificar evolución" subtitle="La evolución original se conservará sin modificaciones." onClose={() => setRectify(null)}><div className="notice warning"><AlertCircle size={17} /> La rectificación quedará vinculada al documento original.</div><FormField label="Motivo de la rectificación"><textarea id="rectification" rows={4} placeholder="Describí el motivo y el contenido que debe aclararse o corregirse." /></FormField><div className="modal-actions"><button className="btn secondary" onClick={() => setRectify(null)}>Cancelar</button><button className="btn primary" onClick={() => { const value = (document.getElementById("rectification") as HTMLTextAreaElement)?.value.trim(); if (!value) { notify("Ingresá el motivo y contenido de la rectificación."); return; } setConsultations(items => [...items, { ...rectify, id: Date.now(), status: "Finalizada", rectification: value }]); setRectify(null); notify("Rectificación agregada al historial."); }}><Check size={16} /> Registrar rectificación</button></div></Modal>}
+    {showDocumentUpload && <DocumentUploadModal patients={patients} consultations={consultations} initialPatientId={documentPatientId} onClose={() => { setShowDocumentUpload(false); setDocumentPatientId(undefined); }} onSave={addClinicalDocument} />}
     {toast && <div className="toast"><CheckCircle2 size={17} />{toast}</div>}
   </div>;
 }
