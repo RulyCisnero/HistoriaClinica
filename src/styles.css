@@ -2135,3 +2135,16 @@ td .icon-button {
     align-items: flex-end;
   }
 }
+
+
+.consultation-attached-documents {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #e9edf3;
+}
+.consultation-attached-documents h3 {
+  margin: 0 0 10px;
+  color: #435168;
+  font-size: 12px;
+  font-weight: 700;
+}
