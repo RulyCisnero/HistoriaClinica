@@ -5,5 +5,170 @@ import { fullName, formatDate, patientById } from "../../utils/formatters";
 import { PageTitle } from "../../components/shared/PageTitle";
 import { StatusPill } from "../../components/shared/StatusPill";
 import { EmptyState } from "../../components/shared/EmptyState";
-export function AgendaPage({appointments,patients,date,setDate,view,setView,onNew,onPatient,onStatus,onStart}:{appointments:Appointment[];patients:Patient[];date:string;setDate:(s:string)=>void;view:"Día"|"Semana"|"Mes";setView:(s:"Día"|"Semana"|"Mes")=>void;onNew:()=>void;onPatient:(id:number)=>void;onStatus:(id:number,s:AppointmentStatus)=>void;onStart:(id:number,appointmentId?:number)=>void}){const shift=(n:number)=>{const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+n);setDate(d.toISOString().slice(0,10));};return <><PageTitle eyebrow="ORGANIZACIÓN" title="Agenda" description="Gestioná los turnos y la disponibilidad de tu consultorio." action={<button className="btn primary" onClick={onNew}><Plus size={16}/> Nuevo turno</button>}/><div className="panel agenda-page-panel"><div className="agenda-toolbar"><div className="date-navigation"><button className="icon-button" onClick={()=>shift(view==="Mes"?-30:view==="Semana"?-7:-1)}><ChevronLeft size={18}/></button><strong>{view==="Día"?formatDate(date):new Date(date+"T12:00:00").toLocaleDateString("es-AR",{month:"long",year:"numeric"})}</strong><button className="icon-button" onClick={()=>shift(view==="Mes"?30:view==="Semana"?7:1)}><ChevronRight size={18}/></button><button className="btn secondary small-btn" onClick={()=>setDate(today)}>Hoy</button></div><div className="segmented">{(["Día","Semana","Mes"] as const).map(v=><button key={v} className={view===v?"selected":""} onClick={()=>setView(v)}>{v}</button>)}</div></div>{view==="Día"?<div className="day-agenda">{Array.from({length:12},(_,i)=>`${String(8+Math.floor(i/2)).padStart(2,"0")}:${i%2===0?"00":"30"}`).map(t=><div className="day-slot" key={t}><span>{t}</span><div>{appointments.filter(a=>a.time===t).map(a=><AgendaCard key={a.id} a={a} patient={patientById(patients,a.patientId)} onPatient={onPatient} onStatus={onStatus} onStart={onStart}/>)}</div></div>)}</div>:view==="Semana"?<div className="week-placeholder"><CalendarDays size={28}/><strong>Vista semanal</strong><p>Seleccioná un día para consultar sus turnos. La vista semanal completa se ampliará en la siguiente iteración de la demo.</p><button className="btn secondary" onClick={()=>setView("Día")}>Volver a vista diaria</button></div>:<div className="week-placeholder"><CalendarDays size={28}/><strong>Vista mensual</strong><p>La navegación mensual está disponible; la grilla completa se incorporará en la siguiente iteración.</p><button className="btn secondary" onClick={()=>setView("Día")}>Volver a vista diaria</button></div>}</div></>}
-export function AgendaCard({a,patient,onPatient,onStatus,onStart}:{a:Appointment;patient:Patient;onPatient:(id:number)=>void;onStatus:(id:number,s:AppointmentStatus)=>void;onStart:(id:number,appointmentId?:number)=>void}){return <div className="agenda-card"><div className="agenda-card-main"><strong>{a.time} · {fullName(patient)}</strong><span>{a.reason||"Consulta"}</span></div><StatusPill status={a.status}/><button className="text-action" onClick={()=>onPatient(patient.id)}>Ficha</button>{a.status==="Pendiente"?<button className="mini-action" onClick={()=>onStatus(a.id,"Confirmado")}>Confirmar</button>:a.status==="Confirmado"?<button className="mini-action" onClick={()=>onStart(patient.id,a.id)}>Iniciar consulta</button>:null}</div>}
+export function AgendaPage({
+  appointments,
+  patients,
+  date,
+  setDate,
+  view,
+  setView,
+  onNew,
+  onPatient,
+  onStatus,
+  onStart,
+}: {
+  appointments: Appointment[];
+  patients: Patient[];
+  date: string;
+  setDate: (s: string) => void;
+  view: "Día" | "Semana" | "Mes";
+  setView: (s: "Día" | "Semana" | "Mes") => void;
+  onNew: () => void;
+  onPatient: (id: number) => void;
+  onStatus: (id: number, s: AppointmentStatus) => void;
+  onStart: (id: number, appointmentId?: number) => void;
+}) {
+  const shift = (n: number) => {
+    const d = new Date(date + "T12:00:00");
+    d.setDate(d.getDate() + n);
+    setDate(d.toISOString().slice(0, 10));
+  };
+  return (
+    <>
+      <PageTitle
+        eyebrow="ORGANIZACIÓN"
+        title="Agenda"
+        description="Gestioná los turnos y la disponibilidad de tu consultorio."
+        action={
+          <button className="btn primary" onClick={onNew}>
+            <Plus size={16} /> Nuevo turno
+          </button>
+        }
+      />
+      <div className="panel agenda-page-panel">
+        <div className="agenda-toolbar">
+          <div className="date-navigation">
+            <button
+              className="icon-button"
+              onClick={() => shift(view === "Mes" ? -30 : view === "Semana" ? -7 : -1)}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <strong>
+              {view === "Día"
+                ? formatDate(date)
+                : new Date(date + "T12:00:00").toLocaleDateString("es-AR", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+            </strong>
+            <button
+              className="icon-button"
+              onClick={() => shift(view === "Mes" ? 30 : view === "Semana" ? 7 : 1)}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button className="btn secondary small-btn" onClick={() => setDate(today)}>
+              Hoy
+            </button>
+          </div>
+          <div className="segmented">
+            {(["Día", "Semana", "Mes"] as const).map((v) => (
+              <button key={v} className={view === v ? "selected" : ""} onClick={() => setView(v)}>
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+        {view === "Día" ? (
+          <div className="day-agenda">
+            {Array.from(
+              { length: 12 },
+              (_, i) =>
+                `${String(8 + Math.floor(i / 2)).padStart(2, "0")}:${i % 2 === 0 ? "00" : "30"}`,
+            ).map((t) => (
+              <div className="day-slot" key={t}>
+                <span>{t}</span>
+                <div>
+                  {appointments
+                    .filter((a) => a.time === t)
+                    .map((a) => (
+                      <AgendaCard
+                        key={a.id}
+                        a={a}
+                        patient={patientById(patients, a.patientId)}
+                        onPatient={onPatient}
+                        onStatus={onStatus}
+                        onStart={onStart}
+                      />
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : view === "Semana" ? (
+          <div className="week-placeholder">
+            <CalendarDays size={28} />
+            <strong>Vista semanal</strong>
+            <p>
+              Seleccioná un día para consultar sus turnos. La vista semanal completa se ampliará en
+              la siguiente iteración de la demo.
+            </p>
+            <button className="btn secondary" onClick={() => setView("Día")}>
+              Volver a vista diaria
+            </button>
+          </div>
+        ) : (
+          <div className="week-placeholder">
+            <CalendarDays size={28} />
+            <strong>Vista mensual</strong>
+            <p>
+              La navegación mensual está disponible; la grilla completa se incorporará en la
+              siguiente iteración.
+            </p>
+            <button className="btn secondary" onClick={() => setView("Día")}>
+              Volver a vista diaria
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+export function AgendaCard({
+  a,
+  patient,
+  onPatient,
+  onStatus,
+  onStart,
+}: {
+  a: Appointment;
+  patient: Patient;
+  onPatient: (id: number) => void;
+  onStatus: (id: number, s: AppointmentStatus) => void;
+  onStart: (id: number, appointmentId?: number) => void;
+}) {
+  return (
+    <div className="agenda-card">
+      <div className="agenda-card-main">
+        <strong>
+          {a.time} · {fullName(patient)}
+        </strong>
+        <span>{a.reason || "Consulta"}</span>
+      </div>
+      <StatusPill status={a.status} />
+      <button className="text-action" onClick={() => onPatient(patient.id)}>
+        Ficha
+      </button>
+      {a.status === "Pendiente" ? (
+        <button className="mini-action" onClick={() => onStatus(a.id, "Confirmado")}>
+          Confirmar
+        </button>
+      ) : a.status === "Confirmado" ? (
+        <button className="mini-action" onClick={() => onStart(patient.id, a.id)}>
+          Iniciar consulta
+        </button>
+      ) : null}
+    </div>
+  );
+}
