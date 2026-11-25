@@ -1789,3 +1789,50 @@ td .icon-button {
     gap: 14px;
   }
 }
+
+
+/* Patient and consultation insurance coverage */
+.form-section-title {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border, #e5e7eb);
+  color: var(--text, #1f2937);
+  font-size: 14px;
+  font-weight: 700;
+}
+.form-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted, #6b7280);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.coverage-section {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  background: var(--surface-soft, #f8fafc);
+}
+.coverage-heading strong {
+  display: block;
+  font-size: 14px;
+}
+.coverage-heading p {
+  margin: 4px 0 0;
+  color: var(--muted, #6b7280);
+  font-size: 12px;
+}
+.coverage-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  color: var(--muted, #6b7280);
+  font-size: 12px;
+}
+.coverage-detail strong {
+  color: var(--text, #1f2937);
+}
