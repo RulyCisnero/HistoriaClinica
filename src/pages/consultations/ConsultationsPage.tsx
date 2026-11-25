@@ -1,4 +1,4 @@
-import { Activity, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, HeartPulse, LayoutDashboard, LogOut, Menu, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Stethoscope, UserRound, Users, X, AlertCircle, ArrowUpRight, Paperclip, Save, CheckCircle2, FilePlus2, SlidersHorizontal, Bell, CalendarCheck, Filter, Pencil, Eye, Download, LockKeyhole } from "lucide-react";
+import { Activity, CalendarDays, ChevronDown, ClipboardList, ShieldCheck, Stethoscope, UserRound, FilePlus2, Pencil, Eye, LockKeyhole } from "lucide-react";
 import { useState } from "react";
 import type { Consultation, Patient, Specialty } from "../../types";
 import { formatDate, fullName, patientById } from "../../utils/formatters";
