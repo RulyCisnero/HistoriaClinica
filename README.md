@@ -28,11 +28,11 @@ npm run preview
 - Navegación principal: Inicio, Agenda, Pacientes, Consultas, Documentos y Configuración.
 - Selector de profesional/especialidad con registros ficticios independientes para cada especialidad.
 - Panel de inicio con resumen de agenda y acciones rápidas.
-- Agenda diaria con creación de turnos, confirmación e inicio de consulta.
+- Agenda diaria con creación de turnos, confirmación e inicio de consulta. Las vistas semanal y mensual están identificadas pero todavía no tienen grilla funcional.
 - Alta y búsqueda de pacientes.
 - Ficha de paciente con resumen, antecedentes, historia clínica y documentos.
 - Consultas con borradores, edición, vista previa y finalización.
-- Evoluciones finalizadas en modo lectura y registro de rectificaciones de demostración.
+- Evoluciones finalizadas en modo lectura y registro de rectificaciones de demostración. La creación de consultas sin turno permanece bloqueada porque esa regla sigue pendiente de definición.
 - Diseño adaptable a escritorio y móvil.
 
 ## Límites importantes
