@@ -32,6 +32,8 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [showPatientForm, setShowPatientForm] = useState(false);\n  const [showCoverageForm, setShowCoverageForm] = useState(false);\n  const [coverageDraft, setCoverageDraft] = useState({ provider: "", plan: "", memberNumber: "" });
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [showConsultationPatientPicker, setShowConsultationPatientPicker] = useState(false);
+  const [consultationPatientSearch, setConsultationPatientSearch] = useState("");
   const [showConsultation, setShowConsultation] = useState(false);
   const [activeConsultation, setActiveConsultation] = useState<Consultation | null>(null);
   const [preview, setPreview] = useState(false);
@@ -137,7 +139,7 @@ export default function App() {
       <header className="topbar"><div className="topbar-left"><button className="icon-button mobile-menu" onClick={() => setMobileNav(true)}><Menu size={20} /></button><span className="breadcrumb">Consultorio <ChevronRight size={14} /> <strong>{section}</strong></span></div><div className="topbar-right"><span className="today-label"><CalendarDays size={15} /> Martes, 24 de noviembre de 2026</span><button className="icon-button notification" onClick={() => notify("No tenés notificaciones nuevas.")}><Bell size={18} /><i /></button><div className="avatar tiny">{doctor.initials}</div></div></header>
       <div className="page-content">
         {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onAddCoverage={() => setShowCoverageForm(true)} onRectify={setRectify} /> :
-          section === "Inicio" ? <DashboardPage doctor={doctor} appointments={todayAppointments} patients={patients} pending={pending} drafts={drafts} onNavigate={go} onPatient={setSelectedPatient} onAppointment={updateAppointment} onStart={openConsultation} /> :
+          section === "Inicio" ? <DashboardPage doctor={doctor} appointments={todayAppointments} patients={patients} pending={pending} drafts={drafts} onNavigate={go} onPatient={setSelectedPatient} onAppointment={updateAppointment} onStart={openConsultation} onNewConsultation={() => { setConsultationPatientSearch(""); setShowConsultationPatientPicker(true); }} onNewAppointment={() => setShowAppointmentForm(true)} /> :
             section === "Agenda" ? <AgendaPage appointments={visibleAppointments} patients={patients} date={agendaDate} setDate={setAgendaDate} view={agendaView} setView={setAgendaView} onNew={() => setShowAppointmentForm(true)} onPatient={setSelectedPatient} onStatus={updateAppointment} onStart={openConsultation} /> :
               section === "Pacientes" ? <PatientsPage patients={visiblePatients} search={search} setSearch={setSearch} onNew={() => setShowPatientForm(true)} onOpen={setSelectedPatient} /> :
                 section === "Consultas" ? <ConsultationsPage consultations={consultations} patients={patients} onOpen={c => { setActiveConsultation(c); setShowConsultation(true); }} onRectify={setRectify} /> :
@@ -147,6 +149,22 @@ export default function App() {
       <footer className="footer"><span>Clínica · Demo interactiva</span><span><LockKeyhole size={12} /> Datos ficticios · No utilizar para atención real</span></footer>
     </main>
 
+    {showConsultationPatientPicker && <Modal title="Nueva consulta" subtitle="Buscá y seleccioná al paciente para comenzar su evolución." onClose={() => setShowConsultationPatientPicker(false)}>
+      <div className="form-stack">
+        <FormField label="Buscar paciente"><input autoFocus value={consultationPatientSearch} onChange={e => setConsultationPatientSearch(e.target.value)} placeholder="Nombre, apellido o DNI" /></FormField>
+        <div className="consultation-patient-options">
+          {patients.filter(patient => `${patient.firstName} ${patient.lastName} ${patient.dni}`.toLowerCase().includes(consultationPatientSearch.toLowerCase().trim())).map(patient => (
+            <button key={patient.id} className="consultation-patient-option" onClick={() => { setShowConsultationPatientPicker(false); openConsultation(patient.id); }}>
+              <span className="consultation-patient-avatar">{patient.firstName.charAt(0)}{patient.lastName.charAt(0)}</span>
+              <span><strong>{fullName(patient)}</strong><small>DNI {patient.dni}</small></span>
+              <ChevronRight size={17} />
+            </button>
+          ))}
+          {patients.filter(patient => `${patient.firstName} ${patient.lastName} ${patient.dni}`.toLowerCase().includes(consultationPatientSearch.toLowerCase().trim())).length === 0 && <p className="form-hint">No encontramos pacientes con esa búsqueda.</p>}
+        </div>
+      </div>
+      <div className="modal-actions"><button className="btn secondary" onClick={() => setShowConsultationPatientPicker(false)}>Cancelar</button><button className="btn primary" onClick={() => { setShowConsultationPatientPicker(false); setShowPatientForm(true); }}><Plus size={16} /> Nuevo paciente</button></div>
+    </Modal>}
     {showPatientForm && <Modal title="Nuevo paciente" subtitle="El registro quedará asociado a tu especialidad." onClose={() => setShowPatientForm(false)}>
       <div className="form-grid">
         <FormField label="DNI *"><input value={patientDraft.dni} onChange={e => setPatientDraft({ ...patientDraft, dni: e.target.value })} placeholder="Ej. 30123456" /></FormField>
