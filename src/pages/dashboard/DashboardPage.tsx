@@ -8,6 +8,8 @@ import {
   Users,
   ArrowUpRight,
   CalendarCheck,
+  ClipboardPlus,
+  CalendarPlus,
 } from "lucide-react";
 import type { Appointment, AppointmentStatus, Patient, Section } from "../../types";
 import { patientById } from "../../utils/formatters";
@@ -24,6 +26,8 @@ export function DashboardPage({
   onPatient,
   onAppointment,
   onStart,
+  onNewConsultation,
+  onNewAppointment,
 }: {
   doctor: { name: string; role: string; initials: string; color: string };
   appointments: Appointment[];
@@ -34,6 +38,8 @@ export function DashboardPage({
   onPatient: (id: number) => void;
   onAppointment: (id: number, s: AppointmentStatus) => void;
   onStart: (id: number, appointmentId?: number) => void;
+  onNewConsultation: () => void;
+  onNewAppointment: () => void;
 }) {
   const active = appointments.filter((a) => a.status !== "Cancelado");
   const next = active.filter((a) => a.status !== "Atendido").slice(0, 4);
@@ -51,6 +57,30 @@ export function DashboardPage({
           <CalendarDays size={16} /> Ver agenda completa
         </button>
       </div>
+      <section className="dashboard-quick-actions" aria-label="Acciones rápidas">
+        <div className="quick-actions-heading">
+          <h2>¿Qué necesitás hacer?</h2>
+          <p>Accesos directos a las tareas más frecuentes</p>
+        </div>
+        <div className="quick-actions-grid">
+          <button className="quick-action-card consultation-action" onClick={onNewConsultation}>
+            <span className="quick-action-icon"><ClipboardPlus size={22} /></span>
+            <span className="quick-action-copy">
+              <strong>Nueva consulta</strong>
+              <small>Elegí un paciente y comenzá su evolución</small>
+            </span>
+            <ChevronRight size={18} className="quick-action-arrow" />
+          </button>
+          <button className="quick-action-card appointment-action" onClick={onNewAppointment}>
+            <span className="quick-action-icon"><CalendarPlus size={22} /></span>
+            <span className="quick-action-copy">
+              <strong>Agregar turno</strong>
+              <small>Asigná paciente, fecha y horario</small>
+            </span>
+            <ChevronRight size={18} className="quick-action-arrow" />
+          </button>
+        </div>
+      </section>
       <div className="stats-grid">
         <StatCard
           icon={CalendarCheck}
