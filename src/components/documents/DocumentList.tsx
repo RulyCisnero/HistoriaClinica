@@ -1,15 +1,17 @@
 import { CalendarDays, Download, FileImage, FileText, Paperclip } from "lucide-react";
-import type { ClinicalDocument, Patient } from "../../types";
+import type { ClinicalDocument, Consultation, Patient } from "../../types";
 import { fullName } from "../../utils/formatters";
 import { EmptyState } from "../shared/EmptyState";
 
 export function DocumentList({
   documents,
   patients,
+  consultations,
   onOpen,
 }: {
   documents: ClinicalDocument[];
   patients: Patient[];
+  consultations: Consultation[];
   onOpen?: (document: ClinicalDocument) => void;
 }) {
   if (documents.length === 0) {
@@ -20,6 +22,7 @@ export function DocumentList({
     <div className="clinical-document-list">
       {documents.map((document) => {
         const patient = patients.find((item) => item.id === document.patientId);
+        const consultation = consultations.find((item) => item.id === document.consultationId);
         const isImage = document.mimeType.startsWith("image/");
         return (
           <article className="clinical-document-row" key={document.id}>
@@ -29,6 +32,7 @@ export function DocumentList({
             <div className="clinical-document-info">
               <strong>{document.name}</strong>
               <span>{patient ? fullName(patient) : "Paciente"} · {document.category}</span>
+              {consultation && <small>Consulta: {new Date(consultation.date + "T12:00:00").toLocaleDateString("es-AR")} · {consultation.reason || consultation.type}</small>}
               <small><CalendarDays size={12} /> {new Date(document.uploadedAt + "T12:00:00").toLocaleDateString("es-AR")} · {(document.size / 1024).toFixed(0)} KB</small>
               {document.notes && <p>{document.notes}</p>}
             </div>
