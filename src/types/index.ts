@@ -50,4 +50,24 @@ export type Consultation = {
   coverage?: InsuranceCoverage | null;
   rectification?: string;
 };
+export type ClinicalDocumentCategory =
+  | "Laboratorio"
+  | "Diagnóstico por imágenes"
+  | "Informe médico"
+  | "Análisis"
+  | "Otro";
+
+export type ClinicalDocument = {
+  id: number;
+  patientId: number;
+  consultationId: number;
+  name: string;
+  category: ClinicalDocumentCategory;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+  notes: string;
+  dataUrl?: string;
+};
+
 export type Doctor = { name: string; role: string; initials: string; color: string };
