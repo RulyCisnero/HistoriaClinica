@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FileUp, Paperclip } from "lucide-react";
-import type { ClinicalDocument, ClinicalDocumentCategory } from "../../types";
+import type { ClinicalDocument, ClinicalDocumentCategory, Consultation, Patient } from "../../types";
 import { Modal } from "../shared/Modal";
 import { FormField } from "../shared/FormField";
 
@@ -16,17 +16,21 @@ const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 
 export function DocumentUploadModal({
-  patientId,
-  consultationId,
+  patients,
+  consultations,
+  initialPatientId,
   onClose,
   onSave,
 }: {
-  patientId: number;
-  consultationId: number;
+  patients: Patient[];
+  consultations: Consultation[];
+  initialPatientId?: number;
   onClose: () => void;
   onSave: (document: ClinicalDocument) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const [patientId, setPatientId] = useState(String(initialPatientId ?? ""));
+  const [consultationId, setConsultationId] = useState("");
   const [category, setCategory] = useState<ClinicalDocumentCategory>("Laboratorio");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
@@ -45,7 +49,11 @@ export function DocumentUploadModal({
     setFile(selected);
   };
 
+  const patientConsultations = consultations.filter((item) => item.patientId === Number(patientId) && item.status === "Finalizada").sort((a, b) => b.date.localeCompare(a.date));
+
   const save = () => {
+    if (!patientId) { setError("Seleccioná un paciente."); return; }
+    if (!consultationId) { setError("Seleccioná la consulta a la que pertenece el documento."); return; }
     if (!file) {
       setError("Seleccioná un archivo para continuar.");
       return;
@@ -54,8 +62,8 @@ export function DocumentUploadModal({
     reader.onload = () => {
       onSave({
         id: Date.now(),
-        patientId,
-        consultationId,
+        patientId: Number(patientId),
+        consultationId: Number(consultationId),
         name: file.name,
         category,
         mimeType: file.type,
