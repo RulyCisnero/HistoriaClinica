@@ -47,6 +47,23 @@ const initialConsultations: Consultation[] = [
   {id:103,patientId:3,date:"2026-11-21",time:"11:00",type:"Seguimiento",status:"Borrador",reason:"Control de seguimiento",symptoms:"Dolor articular intermitente.",exam:"",studies:"",diagnosis:"",plan:"",notes:""},
 ];
 
+const rheumPatients: Patient[] = [
+  {id:11,dni:"27890123",firstName:"Andrea",lastName:"Luna",birth:"1981-03-14",phone:"291 430-2281",email:"andrea.luna@email.com",lastVisit:"19 nov 2026",status:"En seguimiento",personal:"Artritis reumatoidea en seguimiento.",family:"Madre con enfermedad autoinmune.",allergies:"Niega.",medication:"Metotrexato según indicación."},
+  {id:12,dni:"30987654",firstName:"Pablo",lastName:"Ríos",birth:"1987-07-22",phone:"291 522-9011",email:"p.rios@email.com",lastVisit:"21 nov 2026",status:"Activo",personal:"Lumbalgia episódica.",family:"Sin datos relevantes.",allergies:"Niega.",medication:"No refiere."},
+  {id:13,dni:"25123456",firstName:"Sofía",lastName:"Acosta",birth:"1978-11-09",phone:"291 611-4820",email:"sofia.acosta@email.com",lastVisit:"—",status:"Nuevo",personal:"Sin antecedentes cargados.",family:"Sin antecedentes cargados.",allergies:"Sin datos cargados.",medication:"Sin datos cargados."},
+  {id:14,dni:"33456789",firstName:"Diego",lastName:"Molina",birth:"1991-01-30",phone:"291 477-0123",email:"d.molina@email.com",lastVisit:"14 nov 2026",status:"En seguimiento",personal:"Dolor articular en evaluación.",family:"Padre con psoriasis.",allergies:"No refiere.",medication:"No refiere."},
+];
+const rheumAppointments: Appointment[] = [
+  {id:11,patientId:11,date:today,time:"08:30",reason:"Control de tratamiento",status:"Confirmado"},
+  {id:12,patientId:12,date:today,time:"09:30",reason:"Dolor lumbar",status:"Pendiente"},
+  {id:13,patientId:13,date:today,time:"10:30",reason:"Primera consulta",status:"Pendiente"},
+  {id:14,patientId:14,date:today,time:"11:30",reason:"Control evolutivo",status:"Confirmado"},
+];
+const rheumConsultations: Consultation[] = [
+  {id:111,patientId:11,date:"2026-11-19",time:"09:10",type:"Seguimiento",status:"Finalizada",reason:"Control de tratamiento",symptoms:"Menor rigidez matinal según refiere.",exam:"Examen articular registrado.",studies:"Laboratorio de seguimiento revisado.",diagnosis:"Enfermedad en seguimiento.",plan:"Mantener plan actual y control evolutivo.",notes:"Datos ficticios de demostración."},
+  {id:112,patientId:14,date:"2026-11-14",time:"10:40",type:"Seguimiento",status:"Borrador",reason:"Control evolutivo",symptoms:"Dolor articular intermitente.",exam:"",studies:"",diagnosis:"",plan:"",notes:""},
+];
+
 const nav: {label:Section; icon:typeof LayoutDashboard}[] = [
   {label:"Inicio",icon:LayoutDashboard},{label:"Agenda",icon:CalendarDays},{label:"Pacientes",icon:Users},
   {label:"Consultas",icon:ClipboardList},{label:"Documentos",icon:FileText},{label:"Configuración",icon:Settings},
@@ -60,9 +77,15 @@ export default function App() {
   const [specialty,setSpecialty] = useState<Specialty>("Urología");
   const [section,setSection] = useState<Section>("Inicio");
   const [mobileNav,setMobileNav] = useState(false);
-  const [patients,setPatients] = useState(initialPatients);
-  const [appointments,setAppointments] = useState(initialAppointments);
-  const [consultations,setConsultations] = useState(initialConsultations);
+  const [patientsBySpecialty,setPatientsBySpecialty] = useState<Record<Specialty,Patient[]>>({Urología:initialPatients,Reumatología:rheumPatients});
+  const [appointmentsBySpecialty,setAppointmentsBySpecialty] = useState<Record<Specialty,Appointment[]>>({Urología:initialAppointments,Reumatología:rheumAppointments});
+  const [consultationsBySpecialty,setConsultationsBySpecialty] = useState<Record<Specialty,Consultation[]>>({Urología:initialConsultations,Reumatología:rheumConsultations});
+  const patients = patientsBySpecialty[specialty];
+  const appointments = appointmentsBySpecialty[specialty];
+  const consultations = consultationsBySpecialty[specialty];
+  const setPatients = (update:Patient[]|((current:Patient[])=>Patient[])) => setPatientsBySpecialty(current=>({...current,[specialty]:typeof update==="function"?update(current[specialty]):update}));
+  const setAppointments = (update:Appointment[]|((current:Appointment[])=>Appointment[])) => setAppointmentsBySpecialty(current=>({...current,[specialty]:typeof update==="function"?update(current[specialty]):update}));
+  const setConsultations = (update:Consultation[]|((current:Consultation[])=>Consultation[])) => setConsultationsBySpecialty(current=>({...current,[specialty]:typeof update==="function"?update(current[specialty]):update}));
   const [selectedPatient,setSelectedPatient] = useState<number|null>(null);
   const [patientTab,setPatientTab] = useState<"Resumen"|"Historia clínica"|"Antecedentes"|"Documentos">("Resumen");
   const [search,setSearch] = useState("");
