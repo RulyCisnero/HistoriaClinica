@@ -362,3 +362,39 @@ export const rheumConsultations: Consultation[] = [
     notes: "",
   },
 ];
+
+export const initialDocuments = [
+  {
+    id: 501,
+    patientId: 2,
+    consultationId: 104,
+    name: "Laboratorio inicial - Carlos Fernández.pdf",
+    category: "Laboratorio" as const,
+    mimeType: "application/pdf",
+    size: 248000,
+    uploadedAt: "2026-08-05",
+    notes: "Archivo de ejemplo asociado a la primera consulta.",
+  },
+  {
+    id: 502,
+    patientId: 2,
+    consultationId: 106,
+    name: "Informe de control - Carlos Fernández.pdf",
+    category: "Informe médico" as const,
+    mimeType: "application/pdf",
+    size: 312000,
+    uploadedAt: "2026-10-07",
+    notes: "Informe ficticio para probar la relación entre estudios y consultas.",
+  },
+  {
+    id: 503,
+    patientId: 1,
+    consultationId: 101,
+    name: "Laboratorio de seguimiento - Mariana Gómez.pdf",
+    category: "Laboratorio" as const,
+    mimeType: "application/pdf",
+    size: 186000,
+    uploadedAt: "2026-11-18",
+    notes: "Documento de demostración.",
+  },
+];
