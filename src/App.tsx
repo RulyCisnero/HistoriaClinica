@@ -39,7 +39,7 @@ export default function App() {
   const [toast, setToast] = useState("");
   const [agendaView, setAgendaView] = useState<"Día" | "Semana" | "Mes">("Día");
   const [agendaDate, setAgendaDate] = useState(today);
-  const [patientDraft, setPatientDraft] = useState({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "" });
+  const [patientDraft, setPatientDraft] = useState({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "", insuranceProvider: "", insurancePlan: "", memberNumber: "" });
   const [appointmentDraft, setAppointmentDraft] = useState({ patientId: "1", date: today, time: "13:00", reason: "" });
   const [documentSearch, setDocumentSearch] = useState("");
 
@@ -62,11 +62,14 @@ export default function App() {
     notify(`Turno actualizado: ${status.toLowerCase()}.`);
   };
   const openConsultation = (patientId: number, appointmentId?: number) => {
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) { notify("No se encontró el paciente seleccionado."); return; }
     const existing = consultations.find(c => c.patientId === patientId && c.status === "Borrador");
     setActiveConsultation(existing ?? {
       id: Date.now(), patientId, date: today, time: new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }),
       type: consultations.some(c => c.patientId === patientId && c.status === "Finalizada") ? "Seguimiento" : "Primera consulta",
       status: "Borrador", reason: "", symptoms: "", exam: "", studies: "", diagnosis: "", plan: "", notes: "",
+      coverage: patient.insuranceCoverages?.find(c => c.status === "Activa") ?? null,
     });
     setShowConsultation(true); setPreview(false);
     if (appointmentId) setAppointments(items => items.map(a => a.id === appointmentId ? { ...a, status: "Atendido" } : a));
@@ -84,8 +87,12 @@ export default function App() {
   const addPatient = () => {
     if (!patientDraft.dni || !patientDraft.firstName || !patientDraft.lastName || !patientDraft.birth) return;
     if (patients.some(p => p.dni === patientDraft.dni)) { notify("Ya existe un paciente con ese DNI en este registro."); return; }
-    const created: Patient = { id: Date.now(), ...patientDraft, lastVisit: "—", status: "Nuevo", personal: "Sin antecedentes cargados.", family: "Sin antecedentes cargados.", allergies: "Sin datos cargados.", medication: "Sin datos cargados." };
-    setPatients(items => [created, ...items]); setShowPatientForm(false); setPatientDraft({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "" });
+    const { insuranceProvider, insurancePlan, memberNumber, ...patientData } = patientDraft;
+    const coverage = insuranceProvider.trim() && memberNumber.trim()
+      ? [{ id: Date.now(), provider: insuranceProvider.trim(), plan: insurancePlan.trim() || "Sin plan informado", memberNumber: memberNumber.trim(), status: "Activa" as const }]
+      : [];
+    const created: Patient = { id: Date.now(), ...patientData, insuranceCoverages: coverage, lastVisit: "—", status: "Nuevo", personal: "Sin antecedentes cargados.", family: "Sin antecedentes cargados.", allergies: "Sin datos cargados.", medication: "Sin datos cargados." };
+    setPatients(items => [created, ...items]); setShowPatientForm(false); setPatientDraft({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "", insuranceProvider: "", insurancePlan: "", memberNumber: "" });
     setSelectedPatient(created.id); setPatientTab("Resumen"); notify("Paciente agregado al registro de esta especialidad.");
   };
   const addAppointment = () => {
@@ -112,7 +119,7 @@ export default function App() {
     <main className="main-area">
       <header className="topbar"><div className="topbar-left"><button className="icon-button mobile-menu" onClick={() => setMobileNav(true)}><Menu size={20} /></button><span className="breadcrumb">Consultorio <ChevronRight size={14} /> <strong>{section}</strong></span></div><div className="topbar-right"><span className="today-label"><CalendarDays size={15} /> Martes, 24 de noviembre de 2026</span><button className="icon-button notification" onClick={() => notify("No tenés notificaciones nuevas.")}><Bell size={18} /><i /></button><div className="avatar tiny">{doctor.initials}</div></div></header>
       <div className="page-content">
-        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => notify("La creación de consultas sin turno sigue pendiente de definición funcional.")} onRectify={setRectify} /> :
+        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onRectify={setRectify} /> :
           section === "Inicio" ? <DashboardPage doctor={doctor} appointments={todayAppointments} patients={patients} pending={pending} drafts={drafts} onNavigate={go} onPatient={setSelectedPatient} onAppointment={updateAppointment} onStart={openConsultation} /> :
             section === "Agenda" ? <AgendaPage appointments={visibleAppointments} patients={patients} date={agendaDate} setDate={setAgendaDate} view={agendaView} setView={setAgendaView} onNew={() => setShowAppointmentForm(true)} onPatient={setSelectedPatient} onStatus={updateAppointment} onStart={openConsultation} /> :
               section === "Pacientes" ? <PatientsPage patients={visiblePatients} search={search} setSearch={setSearch} onNew={() => setShowPatientForm(true)} onOpen={setSelectedPatient} /> :
@@ -131,6 +138,11 @@ export default function App() {
         <FormField label="Apellido *"><input value={patientDraft.lastName} onChange={e => setPatientDraft({ ...patientDraft, lastName: e.target.value })} placeholder="Apellido" /></FormField>
         <FormField label="Teléfono"><input value={patientDraft.phone} onChange={e => setPatientDraft({ ...patientDraft, phone: e.target.value })} placeholder="291 ..." /></FormField>
         <FormField label="Email"><input value={patientDraft.email} onChange={e => setPatientDraft({ ...patientDraft, email: e.target.value })} placeholder="correo@ejemplo.com" /></FormField>
+        <div className="form-section-title">Obra social / prepaga (opcional)</div>
+        <FormField label="Obra social o prepaga"><input value={patientDraft.insuranceProvider} onChange={e => setPatientDraft({ ...patientDraft, insuranceProvider: e.target.value })} placeholder="Ej. OSDE, IOMA, Swiss Medical" /></FormField>
+        <FormField label="Plan"><input value={patientDraft.insurancePlan} onChange={e => setPatientDraft({ ...patientDraft, insurancePlan: e.target.value })} placeholder="Nombre o código del plan" /></FormField>
+        <FormField label="Número de asociado"><input value={patientDraft.memberNumber} onChange={e => setPatientDraft({ ...patientDraft, memberNumber: e.target.value })} placeholder="Número de afiliado" /></FormField>
+        <p className="form-hint">Si no tiene cobertura, dejá estos campos vacíos. Para cargar cobertura, completá obra social/prepaga y número de asociado.</p>
       </div><div className="modal-actions"><button className="btn secondary" onClick={() => setShowPatientForm(false)}>Cancelar</button><button className="btn primary" onClick={addPatient}><Plus size={16} /> Crear paciente</button></div>
     </Modal>}
     {showAppointmentForm && <Modal title="Nuevo turno" subtitle="Los turnos nuevos comienzan en estado Pendiente." onClose={() => setShowAppointmentForm(false)}>
