@@ -1,5 +1,5 @@
 import { Activity, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, HeartPulse, LayoutDashboard, LogOut, Menu, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Stethoscope, UserRound, Users, X, AlertCircle, ArrowUpRight, Paperclip, Save, CheckCircle2, FilePlus2, SlidersHorizontal, Bell, CalendarCheck, Filter, Pencil, Eye, Download, LockKeyhole } from "lucide-react";
-import type { Appointment, Patient, Section } from "../../types";
+import type { Appointment, AppointmentStatus, Patient, Section } from "../../types";
 import { patientById } from "../../utils/formatters";
 import { StatCard } from "../../components/shared/StatCard";
 import { AppointmentRow } from "../../components/shared/AppointmentRow";
