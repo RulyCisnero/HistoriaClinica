@@ -35,7 +35,9 @@ export default function App() {
   const [selectedPatient, setSelectedPatient] = useState<number | null>(null);
   const [patientTab, setPatientTab] = useState<"Resumen" | "Historia clínica" | "Antecedentes" | "Documentos">("Resumen");
   const [search, setSearch] = useState("");
-  const [showPatientForm, setShowPatientForm] = useState(false);\n  const [showCoverageForm, setShowCoverageForm] = useState(false);\n  const [coverageDraft, setCoverageDraft] = useState({ provider: "", plan: "", memberNumber: "" });
+  const [showPatientForm, setShowPatientForm] = useState(false) 
+  const [showCoverageForm, setShowCoverageForm] = useState(false);
+  const [coverageDraft, setCoverageDraft] = useState({ provider: "", plan: "", memberNumber: "" });
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [showConsultationPatientPicker, setShowConsultationPatientPicker] = useState(false);
   const [consultationPatientSearch, setConsultationPatientSearch] = useState("");
