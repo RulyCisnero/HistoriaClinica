@@ -88,6 +88,10 @@ export default function App() {
     if (!patientDraft.dni || !patientDraft.firstName || !patientDraft.lastName || !patientDraft.birth) return;
     if (patients.some(p => p.dni === patientDraft.dni)) { notify("Ya existe un paciente con ese DNI en este registro."); return; }
     const { insuranceProvider, insurancePlan, memberNumber, ...patientData } = patientDraft;
+    if ((insuranceProvider.trim() || insurancePlan.trim() || memberNumber.trim()) && (!insuranceProvider.trim() || !memberNumber.trim())) {
+      notify("Para registrar una cobertura, completá obra social/prepaga y número de asociado.");
+      return;
+    }
     const coverage = insuranceProvider.trim() && memberNumber.trim()
       ? [{ id: Date.now(), provider: insuranceProvider.trim(), plan: insurancePlan.trim() || "Sin plan informado", memberNumber: memberNumber.trim(), status: "Activa" as const }]
       : [];
