@@ -30,7 +30,7 @@ export default function App() {
   const [selectedPatient, setSelectedPatient] = useState<number | null>(null);
   const [patientTab, setPatientTab] = useState<"Resumen" | "Historia clínica" | "Antecedentes" | "Documentos">("Resumen");
   const [search, setSearch] = useState("");
-  const [showPatientForm, setShowPatientForm] = useState(false);
+  const [showPatientForm, setShowPatientForm] = useState(false);\n  const [showCoverageForm, setShowCoverageForm] = useState(false);\n  const [coverageDraft, setCoverageDraft] = useState({ provider: "", plan: "", memberNumber: "" });
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [showConsultation, setShowConsultation] = useState(false);
   const [activeConsultation, setActiveConsultation] = useState<Consultation | null>(null);
@@ -99,6 +99,19 @@ export default function App() {
     setPatients(items => [created, ...items]); setShowPatientForm(false); setPatientDraft({ dni: "", firstName: "", lastName: "", birth: "", phone: "", email: "", insuranceProvider: "", insurancePlan: "", memberNumber: "" });
     setSelectedPatient(created.id); setPatientTab("Resumen"); notify("Paciente agregado al registro de esta especialidad.");
   };
+  const addCoverage = () => {
+    if (!selected) return;
+    if (!coverageDraft.provider.trim() || !coverageDraft.memberNumber.trim()) {
+      notify("Completá obra social/prepaga y número de asociado.");
+      return;
+    }
+    const coverage = { id: Date.now(), provider: coverageDraft.provider.trim(), plan: coverageDraft.plan.trim() || "Sin plan informado", memberNumber: coverageDraft.memberNumber.trim(), status: "Activa" as const };
+    setPatients(items => items.map(patient => patient.id === selected.id ? { ...patient, insuranceCoverages: [...(patient.insuranceCoverages ?? []), coverage] } : patient));
+    setShowCoverageForm(false);
+    setCoverageDraft({ provider: "", plan: "", memberNumber: "" });
+    notify("Cobertura agregada a la ficha del paciente.");
+  };
+
   const addAppointment = () => {
     const patientId = Number(appointmentDraft.patientId);
     if (!patientId || !appointmentDraft.date || !appointmentDraft.time) return;
@@ -123,7 +136,7 @@ export default function App() {
     <main className="main-area">
       <header className="topbar"><div className="topbar-left"><button className="icon-button mobile-menu" onClick={() => setMobileNav(true)}><Menu size={20} /></button><span className="breadcrumb">Consultorio <ChevronRight size={14} /> <strong>{section}</strong></span></div><div className="topbar-right"><span className="today-label"><CalendarDays size={15} /> Martes, 24 de noviembre de 2026</span><button className="icon-button notification" onClick={() => notify("No tenés notificaciones nuevas.")}><Bell size={18} /><i /></button><div className="avatar tiny">{doctor.initials}</div></div></header>
       <div className="page-content">
-        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onRectify={setRectify} /> :
+        {selected ? <PatientProfile patient={selected} consultations={consultations.filter(c => c.patientId === selected.id)} tab={patientTab} setTab={setPatientTab} onBack={() => setSelectedPatient(null)} onConsult={() => openConsultation(selected.id)} onAddCoverage={() => setShowCoverageForm(true)} onRectify={setRectify /> :
           section === "Inicio" ? <DashboardPage doctor={doctor} appointments={todayAppointments} patients={patients} pending={pending} drafts={drafts} onNavigate={go} onPatient={setSelectedPatient} onAppointment={updateAppointment} onStart={openConsultation} /> :
             section === "Agenda" ? <AgendaPage appointments={visibleAppointments} patients={patients} date={agendaDate} setDate={setAgendaDate} view={agendaView} setView={setAgendaView} onNew={() => setShowAppointmentForm(true)} onPatient={setSelectedPatient} onStatus={updateAppointment} onStart={openConsultation} /> :
               section === "Pacientes" ? <PatientsPage patients={visiblePatients} search={search} setSearch={setSearch} onNew={() => setShowPatientForm(true)} onOpen={setSelectedPatient} /> :
@@ -148,6 +161,14 @@ export default function App() {
         <FormField label="Número de asociado"><input value={patientDraft.memberNumber} onChange={e => setPatientDraft({ ...patientDraft, memberNumber: e.target.value })} placeholder="Número de afiliado" /></FormField>
         <p className="form-hint">Si no tiene cobertura, dejá estos campos vacíos. Para cargar cobertura, completá obra social/prepaga y número de asociado.</p>
       </div><div className="modal-actions"><button className="btn secondary" onClick={() => setShowPatientForm(false)}>Cancelar</button><button className="btn primary" onClick={addPatient}><Plus size={16} /> Crear paciente</button></div>
+    </Modal>}
+    {showCoverageForm && selected && <Modal title="Agregar obra social / prepaga" subtitle={`Cobertura para ${fullName(selected)}.`} onClose={() => setShowCoverageForm(false)}>
+      <div className="form-stack">
+        <FormField label="Obra social o prepaga *"><input value={coverageDraft.provider} onChange={e => setCoverageDraft({ ...coverageDraft, provider: e.target.value })} placeholder="Ej. OSDE, IOMA, Swiss Medical" /></FormField>
+        <FormField label="Plan"><input value={coverageDraft.plan} onChange={e => setCoverageDraft({ ...coverageDraft, plan: e.target.value })} placeholder="Nombre o código del plan" /></FormField>
+        <FormField label="Número de asociado *"><input value={coverageDraft.memberNumber} onChange={e => setCoverageDraft({ ...coverageDraft, memberNumber: e.target.value })} placeholder="Número de afiliado" /></FormField>
+      </div>
+      <div className="modal-actions"><button className="btn secondary" onClick={() => setShowCoverageForm(false)}>Cancelar</button><button className="btn primary" onClick={addCoverage}><Plus size={16}/> Agregar cobertura</button></div>
     </Modal>}
     {showAppointmentForm && <Modal title="Nuevo turno" subtitle="Los turnos nuevos comienzan en estado Pendiente." onClose={() => setShowAppointmentForm(false)}>
       <div className="form-stack"><FormField label="Paciente"><select value={appointmentDraft.patientId} onChange={e => setAppointmentDraft({ ...appointmentDraft, patientId: e.target.value })}>{patients.map(p => <option key={p.id} value={p.id}>{fullName(p)} · {p.dni}</option>)}</select></FormField><div className="form-grid"><FormField label="Fecha"><input type="date" value={appointmentDraft.date} onChange={e => setAppointmentDraft({ ...appointmentDraft, date: e.target.value })} /></FormField><FormField label="Horario"><input type="time" value={appointmentDraft.time} onChange={e => setAppointmentDraft({ ...appointmentDraft, time: e.target.value })} /></FormField></div><FormField label="Motivo (opcional)"><input value={appointmentDraft.reason} onChange={e => setAppointmentDraft({ ...appointmentDraft, reason: e.target.value })} placeholder="Motivo del turno" /></FormField></div><div className="modal-actions"><button className="btn secondary" onClick={() => setShowAppointmentForm(false)}>Cancelar</button><button className="btn primary" onClick={addAppointment}><CalendarCheck size={16} /> Guardar turno</button></div>
