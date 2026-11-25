@@ -1,0 +1,1 @@
+export function StatusPill({status}:{status:string}){const cls=status==="Confirmado"?"confirmed":status==="Pendiente"?"pending":status==="Atendido"?"attended":status==="Cancelado"?"cancelled":"absent";return <span className={`status-pill ${cls}`}><i/>{status}</span>}
