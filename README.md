@@ -26,7 +26,7 @@ npm run preview
 ## Qué incluye esta iteración
 
 - Navegación principal: Inicio, Agenda, Pacientes, Consultas, Documentos y Configuración.
-- Selector de profesional/especialidad para recorrer la demo.
+- Selector de profesional/especialidad con registros ficticios independientes para cada especialidad.
 - Panel de inicio con resumen de agenda y acciones rápidas.
 - Agenda diaria con creación de turnos, confirmación e inicio de consulta.
 - Alta y búsqueda de pacientes.
