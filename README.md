@@ -16,12 +16,16 @@ npm run dev
 
 Vite mostrará una URL local, normalmente `http://localhost:5173`.
 
-Para validar la compilación:
+Para mantener el formato consistente y validar la compilación:
 
 ```bash
+npm run format
+npm run format:check
 npm run build
 npm run preview
 ```
+
+La configuración de Prettier está centralizada en `.prettierrc.json`. También hay una validación automática de formato y compilación en GitHub Actions.
 
 ## Arquitectura frontend
 
