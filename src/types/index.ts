@@ -1,6 +1,13 @@
 export type Specialty = "Urología" | "Reumatología";
 export type Section =
   "Inicio" | "Agenda" | "Pacientes" | "Consultas" | "Documentos" | "Configuración";
+export type InsuranceCoverage = {
+  id: number;
+  provider: string;
+  plan: string;
+  memberNumber: string;
+  status: "Activa" | "Inactiva";
+};
 export type Patient = {
   id: number;
   dni: string;
@@ -15,6 +22,7 @@ export type Patient = {
   family: string;
   allergies: string;
   medication: string;
+  insuranceCoverages?: InsuranceCoverage[];
 };
 export type AppointmentStatus = "Pendiente" | "Confirmado" | "Atendido" | "Cancelado" | "Ausente";
 export type Appointment = {
@@ -39,6 +47,7 @@ export type Consultation = {
   diagnosis: string;
   plan: string;
   notes: string;
+  coverage?: InsuranceCoverage | null;
   rectification?: string;
 };
 export type Doctor = { name: string; role: string; initials: string; color: string };
