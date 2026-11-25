@@ -1,6 +1,5 @@
 import type { Appointment, Consultation, Patient } from "../types";
 
-export const today = "2026-11-24";
 export const initialPatients: Patient[] = [
   {id:1,dni:"28456789",firstName:"Mariana",lastName:"Gómez",birth:"1982-04-18",phone:"291 456-7821",email:"mariana.gomez@email.com",lastVisit:"18 nov 2026",status:"En seguimiento",personal:"Hipertensión arterial controlada.",family:"Madre con diabetes tipo 2.",allergies:"Penicilina.",medication:"Losartán 50 mg."},
   {id:2,dni:"32145987",firstName:"Carlos",lastName:"Fernández",birth:"1976-09-02",phone:"291 512-3344",email:"c.fernandez@email.com",lastVisit:"20 nov 2026",status:"Activo",personal:"Sin antecedentes relevantes.",family:"Padre con antecedente cardiovascular.",allergies:"Niega.",medication:"No refiere."},
@@ -42,7 +41,3 @@ export const rheumConsultations: Consultation[] = [
   {id:112,patientId:14,date:"2026-11-14",time:"10:40",type:"Seguimiento",status:"Borrador",reason:"Control evolutivo",symptoms:"Dolor articular intermitente.",exam:"",studies:"",diagnosis:"",plan:"",notes:""},
 ];
 
-export const nav: {label:Section; icon:typeof LayoutDashboard}[] = [
-  {label:"Inicio",icon:LayoutDashboard},{label:"Agenda",icon:CalendarDays},{label:"Pacientes",icon:Users},
-  {label:"Consultas",icon:ClipboardList},{label:"Documentos",icon:FileText},{label:"Configuración",icon:Settings},
-];
