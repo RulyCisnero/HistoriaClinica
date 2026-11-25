@@ -1842,3 +1842,153 @@ td .icon-button {
   justify-content: flex-end;
   margin-top: 8px;
 }
+
+
+/* Dashboard quick actions */
+.dashboard-quick-actions {
+  margin: 24px 0;
+}
+.quick-actions-heading {
+  margin-bottom: 13px;
+}
+.quick-actions-heading h2 {
+  margin: 0;
+  color: #344157;
+  font: 700 14px Manrope, sans-serif;
+}
+.quick-actions-heading p {
+  margin: 5px 0 0;
+  color: #929eae;
+  font-size: 10px;
+}
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #e7edf6;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.quick-action-card:hover {
+  border-color: #cbd8f2;
+  box-shadow: 0 5px 18px #263b5a0a;
+  transform: translateY(-1px);
+}
+.quick-action-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 12px;
+}
+.consultation-action .quick-action-icon {
+  color: #5278ce;
+  background: #edf3ff;
+}
+.appointment-action .quick-action-icon {
+  color: #5b9c7d;
+  background: #edf8f2;
+}
+.quick-action-copy {
+  flex: 1;
+  min-width: 0;
+}
+.quick-action-copy strong,
+.quick-action-copy small {
+  display: block;
+}
+.quick-action-copy strong {
+  color: #344157;
+  font-size: 12px;
+  font-weight: 700;
+}
+.quick-action-copy small {
+  margin-top: 5px;
+  color: #929eae;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.quick-action-arrow {
+  flex: none;
+  color: #a2adbd;
+}
+.consultation-patient-options {
+  display: grid;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #edf0f4;
+  border-radius: 9px;
+}
+.consultation-patient-option {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  border: 0;
+  border-bottom: 1px solid #edf0f4;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.consultation-patient-option:last-child {
+  border-bottom: 0;
+}
+.consultation-patient-option:hover {
+  background: #f8faff;
+}
+.consultation-patient-avatar {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  flex: none;
+  border-radius: 50%;
+  background: #edf3ff;
+  color: #5278ce;
+  font-size: 11px;
+  font-weight: 700;
+}
+.consultation-patient-option > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.consultation-patient-option strong,
+.consultation-patient-option small {
+  display: block;
+}
+.consultation-patient-option strong {
+  color: #435168;
+  font-size: 11px;
+}
+.consultation-patient-option small {
+  margin-top: 4px;
+  color: #929eae;
+  font-size: 9px;
+}
+.consultation-patient-option > svg {
+  color: #a2adbd;
+}
+@media (max-width: 560px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .quick-action-card {
+    padding: 15px;
+  }
+  .quick-action-icon {
+    width: 42px;
+    height: 42px;
+  }
+}
