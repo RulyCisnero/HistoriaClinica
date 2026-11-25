@@ -80,6 +80,19 @@ export function DocumentUploadModal({
   return (
     <Modal title="Adjuntar estudio o documento" subtitle="El archivo quedará vinculado al paciente y a la consulta seleccionada." onClose={onClose}>
       <div className="form-stack">
+        <FormField label="Paciente *">
+          <select value={patientId} onChange={(event) => { setPatientId(event.target.value); setConsultationId(""); }}>
+            <option value="">Seleccionar paciente</option>
+            {patients.map((patient) => <option key={patient.id} value={patient.id}>{patient.lastName}, {patient.firstName} · DNI {patient.dni}</option>)}
+          </select>
+        </FormField>
+        <FormField label="Consulta relacionada *">
+          <select value={consultationId} onChange={(event) => setConsultationId(event.target.value)} disabled={!patientId}>
+            <option value="">Seleccionar consulta finalizada</option>
+            {patientConsultations.map((consultation) => <option key={consultation.id} value={consultation.id}>{new Date(consultation.date + "T12:00:00").toLocaleDateString("es-AR")} · {consultation.reason || consultation.type}</option>)}
+          </select>
+        </FormField>
+        {patientId && patientConsultations.length === 0 && <p className="form-hint">Este paciente todavía no tiene consultas finalizadas para vincular el documento.</p>}
         <FormField label="Archivo *">
           <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onChange={(event) => selectFile(event.target.files?.[0])} />
         </FormField>
