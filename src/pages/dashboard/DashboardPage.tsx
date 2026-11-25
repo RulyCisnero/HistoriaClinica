@@ -4,7 +4,7 @@ import { patientById } from "../../utils/formatters";
 import { StatCard } from "../../components/shared/StatCard";
 import { AppointmentRow } from "../../components/shared/AppointmentRow";
 import { EmptyState } from "../../components/shared/EmptyState";
-export function Dashboard({doctor,appointments,patients,pending,drafts,onNavigate,onPatient,onAppointment,onStart}:{doctor:{name:string;role:string;initials:string;color:string};appointments:Appointment[];patients:Patient[];pending:number;drafts:number;onNavigate:(s:Section)=>void;onPatient:(id:number)=>void;onAppointment:(id:number,s:AppointmentStatus)=>void;onStart:(id:number,appointmentId?:number)=>void}) {
+export function DashboardPage({doctor,appointments,patients,pending,drafts,onNavigate,onPatient,onAppointment,onStart}:{doctor:{name:string;role:string;initials:string;color:string};appointments:Appointment[];patients:Patient[];pending:number;drafts:number;onNavigate:(s:Section)=>void;onPatient:(id:number)=>void;onAppointment:(id:number,s:AppointmentStatus)=>void;onStart:(id:number,appointmentId?:number)=>void}) {
   const active=appointments.filter(a=>a.status!=="Cancelado");
   const next=active.filter(a=>a.status!=="Atendido").slice(0,4);
   return <><div className="welcome-row"><div><div className="eyebrow">MARTES, 24 DE NOVIEMBRE DE 2026</div><h1>Buen día, {doctor.name.split(" ")[1]} <span className="wave">✦</span></h1><p>Este es el resumen de tu consultorio para hoy.</p></div><button className="btn primary" onClick={()=>onNavigate("Agenda")}><CalendarDays size={16}/> Ver agenda completa</button></div>
