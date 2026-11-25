@@ -1,9 +1,4 @@
-import { useMemo, useState } from "react";
-import {
-  Bell, CalendarCheck, CalendarDays, Check, CheckCircle2, ChevronDown,
-  ChevronRight, Eye, HeartPulse, LockKeyhole, Menu, MoreHorizontal, Plus,
-  Save, ShieldCheck, X, AlertCircle
-} from "lucide-react";
+import { useMemo, CalendarCheck, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronRight, Eye, HeartPulse, LockKeyhole, Menu, MoreHorizontal, Plus, Save, ShieldCheck, X, AlertCircle } from "lucide-react";
 import type { Appointment, AppointmentStatus, Consultation, Patient, Section, Specialty } from "./types";
 import { initialPatients, initialAppointments, initialConsultations, rheumPatients, rheumAppointments, rheumConsultations, today } from "./data/mockData";
 import { fullName, formatDate, patientById } from "./utils/formatters";
