@@ -1,126 +1,62 @@
-import {
-  Activity,
-  CalendarDays,
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList,
-  Clock3,
-  FileText,
-  HeartPulse,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  MoreHorizontal,
-  Plus,
-  Search,
-  Settings,
-  ShieldCheck,
-  Stethoscope,
-  UserRound,
-  Users,
-  X,
-  AlertCircle,
-  ArrowUpRight,
-  Paperclip,
-  Save,
-  CheckCircle2,
-  FilePlus2,
-  SlidersHorizontal,
-  Bell,
-  CalendarCheck,
-  Filter,
-  Pencil,
-  Eye,
-  Download,
-  LockKeyhole,
-} from "lucide-react";
-import type { Patient } from "../../types";
+import { useMemo, useState } from "react";
+import { Paperclip, Search } from "lucide-react";
+import type { ClinicalDocument, Patient } from "../../types";
 import { PageTitle } from "../../components/shared/PageTitle";
+import { DocumentList } from "../../components/documents/DocumentList";
 import { EmptyState } from "../../components/shared/EmptyState";
+
 export function DocumentsPage({
   patients,
+  documents,
   search,
   setSearch,
+  onUpload,
 }: {
   patients: Patient[];
+  documents: ClinicalDocument[];
   search: string;
-  setSearch: (s: string) => void;
+  setSearch: (value: string) => void;
+  onUpload: () => void;
 }) {
-  const docs = [
-    { name: "Laboratorio de control", patient: "Mariana Gómez", date: "18 nov 2026", type: "PDF" },
-    { name: "Informe de imágenes", patient: "Carlos Fernández", date: "20 nov 2026", type: "PDF" },
-    {
-      name: "Estudio complementario",
-      patient: "Lucía Martínez",
-      date: "12 nov 2026",
-      type: "Imagen",
-    },
-  ].filter((d) => `${d.name} ${d.patient}`.toLowerCase().includes(search.toLowerCase()));
+  const [patientFilter, setPatientFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const filtered = useMemo(() => documents.filter((document) => {
+    const patient = patients.find((item) => item.id === document.patientId);
+    const matchesSearch = `${document.name} ${patient?.firstName ?? ""} ${patient?.lastName ?? ""} ${document.category}`.toLowerCase().includes(search.toLowerCase());
+    return matchesSearch && (patientFilter === "all" || String(document.patientId) === patientFilter) && (categoryFilter === "all" || document.category === categoryFilter);
+  }), [documents, patients, search, patientFilter, categoryFilter]);
+
   return (
     <>
-      <PageTitle
-        eyebrow="ARCHIVO CLÍNICO"
-        title="Documentos"
-        description="Estudios y archivos asociados a tus pacientes."
-      />
+      <PageTitle eyebrow="ARCHIVO CLÍNICO" title="Estudios y documentos" description="Consultá los archivos adjuntos a las consultas de tus pacientes." action={<button className="btn primary" onClick={onUpload}><Paperclip size={16} /> Adjuntar archivo</button>} />
       <div className="panel table-panel">
-        <div className="table-toolbar">
-          <div className="search-box">
-            <Search size={17} />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar documento o paciente..."
-            />
-          </div>
-          <button
-            className="btn secondary small-btn"
-            onClick={() => alert("La carga de archivos se habilitará en una etapa posterior.")}
-          >
-            <Paperclip size={15} /> Adjuntar archivo
-          </button>
+        <div className="documents-toolbar">
+          <div className="search-box"><Search size={17} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar por documento o paciente..." /></div>
+          <select value={patientFilter} onChange={(event) => setPatientFilter(event.target.value)}><option value="all">Todos los pacientes</option>{patients.map((patient) => <option key={patient.id} value={patient.id}>{patient.lastName}, {patient.firstName}</option>)}</select>
+          <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">Todas las categorías</option>{["Laboratorio", "Diagnóstico por imágenes", "Informe médico", "Análisis", "Otro"].map((category) => <option key={category}>{category}</option>)}</select>
         </div>
-        <div className="document-list">
-          {docs.map((d) => (
-            <div className="document-row" key={d.name}>
-              <div className="document-icon">
-                <FileText size={20} />
-              </div>
-              <div className="document-info">
-                <strong>{d.name}</strong>
-                <span>
-                  {d.patient} · Cargado el {d.date}
-                </span>
-              </div>
-              <span className="file-type">{d.type}</span>
-              <button
-                className="icon-button"
-                title="Vista de demostración"
-                onClick={() =>
-                  alert(
-                    "Los archivos son ficticios. La carga y descarga privada se implementarán con el backend.",
-                  )
-                }
-              >
-                <Download size={16} />
-              </button>
-            </div>
-          ))}
-          {docs.length === 0 && (
-            <EmptyState
-              icon={FileText}
-              title="No hay documentos"
-              text="Probá con otro término de búsqueda."
-            />
-          )}
-        </div>
+        <div className="document-results-heading"><strong>{filtered.length} archivos</strong><span>Solo documentos del registro de {patients.length} pacientes</span></div>
+        <DocumentList documents={filtered} patients={patients} />
       </div>
-      <p className="helper-note">
-        <ShieldCheck size={15} /> En la aplicación real, los archivos se almacenarán de forma
-        privada y requerirán autorización profesional.
-      </p>
+      <p className="helper-note">Los archivos se vinculan a una consulta y permanecen asociados al paciente. En esta versión de demostración se guardan temporalmente en el navegador.</p>
     </>
+  );
+}
+
+export function PatientDocumentsPanel({
+  patient,
+  documents,
+  onUpload,
+}: {
+  patient: Patient;
+  documents: ClinicalDocument[];
+  onUpload: () => void;
+}) {
+  const patientDocuments = documents.filter((document) => document.patientId === patient.id);
+  return (
+    <section className="panel detail-card">
+      <div className="panel-heading"><div><h2>Estudios y documentos</h2><p>Archivos vinculados a las consultas de este paciente</p></div><button className="btn secondary small-btn" onClick={onUpload}><Paperclip size={15} /> Adjuntar</button></div>
+      {patientDocuments.length ? <DocumentList documents={patientDocuments} patients={[patient]} /> : <EmptyState icon={Paperclip} title="Sin documentos asociados" text="Podés adjuntar resultados de laboratorio, imágenes e informes desde aquí." />}
+    </section>
   );
 }
