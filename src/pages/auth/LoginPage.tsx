@@ -110,7 +110,7 @@ export function LoginPage({
 
         <div className="login-security-note">
           <ShieldCheck size={17} />
-          <span><strong>Acceso por profesional</strong> Cada cuenta visualiza únicamente los datos de su especialidad en esta demostración.</span>
+          <span><strong>Acceso por profesional</strong> La interfaz separa los registros por especialidad. La protección real de los datos se aplicará desde el backend.</span>
         </div>
         <div className="login-demo-hint">
           <Stethoscope size={14} /> Clave de prueba: <strong>DEMO2026</strong>
