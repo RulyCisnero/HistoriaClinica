@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronRight, Eye, HeartPulse, LockKeyhole, Menu, MoreHorizontal, Plus, Save, ShieldCheck, X, AlertCircle, Bell } from "lucide-react";
+import { CalendarCheck, CalendarDays, Check, CheckCircle2, ChevronRight, Eye, HeartPulse, LockKeyhole, Menu, Plus, Save, ShieldCheck, X, AlertCircle, Bell } from "lucide-react";
 import type { Appointment, AppointmentStatus, ClinicalDocument, Consultation, Patient, Section, Specialty } from "./types";
 import { initialPatients, initialAppointments, initialConsultations, initialDocuments, rheumPatients, rheumAppointments, rheumConsultations, today } from "./data/mockData";
 import { fullName, formatDate, patientById } from "./utils/formatters";
@@ -15,7 +15,6 @@ import { LoginPage } from "./pages/auth/LoginPage";
 import { Modal } from "./components/shared/Modal";
 import { FormField } from "./components/shared/FormField";
 import { useMemo, useState } from "react";
-import React from "react";
 
 export default function App() {
   const [specialty, setSpecialty] = useState<Specialty>("Urología");
