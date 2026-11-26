@@ -11,6 +11,7 @@ import { DocumentsPage } from "./pages/documents/DocumentsPage";
 import { DocumentUploadModal } from "./components/documents/DocumentUploadModal";
 import { DocumentList } from "./components/documents/DocumentList";
 import { SettingsPage } from "./pages/settings/SettingsPage";
+import { LoginPage } from "./pages/auth/LoginPage";
 import { Modal } from "./components/shared/Modal";
 import { FormField } from "./components/shared/FormField";
 import { useMemo, useState } from "react";
@@ -18,6 +19,7 @@ import React from "react";
 
 export default function App() {
   const [specialty, setSpecialty] = useState<Specialty>("Urología");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [section, setSection] = useState<Section>("Inicio");
   const [mobileNav, setMobileNav] = useState(false);
   const [patientsBySpecialty, setPatientsBySpecialty] = useState<Record<Specialty, Patient[]>>({ Urología: initialPatients, Reumatología: rheumPatients });
@@ -125,6 +127,18 @@ export default function App() {
     notify("Cobertura agregada a la ficha del paciente.");
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setSelectedPatient(null);
+    setShowConsultation(false);
+    setActiveConsultation(null);
+    setShowDocumentUpload(false);
+    setShowAppointmentForm(false);
+    setShowPatientForm(false);
+    setSection("Inicio");
+    setMobileNav(false);
+  };
+
   const addAppointment = () => {
     const patientId = Number(appointmentDraft.patientId);
     if (!patientId || !appointmentDraft.date || !appointmentDraft.time) return;
@@ -133,17 +147,25 @@ export default function App() {
     setShowAppointmentForm(false); notify("Turno creado en estado Pendiente.");
   };
 
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={(selectedSpecialty) => {
+      setSpecialty(selectedSpecialty);
+      setIsAuthenticated(true);
+      setSection("Inicio");
+    }} />;
+  }
+
   return <div className="app-shell">
     <aside className={`sidebar ${mobileNav ? "sidebar-open" : ""}`}>
       <div className="brand"><div className="brand-mark"><HeartPulse size={22} /></div><div><strong>clínica</strong><span>HISTORIA DIGITAL</span></div><button className="icon-button mobile-close" onClick={() => setMobileNav(false)}><X size={18} /></button></div>
       <div className="workspace-label">CONSULTORIO</div>
-      <button className="doctor-switch" onClick={() => setSpecialty(s => s === "Urología" ? "Reumatología" : "Urología")}>
+      <div className="doctor-switch">
         <div className={`avatar small ${specialty === "Urología" ? "blue" : "violet"}`}>{doctor.initials}</div>
         <div className="doctor-copy"><strong>{doctor.name}</strong><span>{doctor.role}</span></div><ChevronDown size={16} />
       </button>
       <div className="workspace-label nav-label">MENÚ PRINCIPAL</div>
       <nav className="main-nav">{navItems.map(item => <button key={item.label} className={section === item.label ? "nav-item active" : "nav-item"} onClick={() => go(item.label)}><item.icon size={18} /><span>{item.label}</span>{item.label === "Consultas" && drafts > 0 && <em>{drafts}</em>}</button>)}</nav>
-      <div className="sidebar-bottom"><div className="privacy-note"><ShieldCheck size={17} /><div><strong>Entorno privado</strong><span>Acceso profesional</span></div></div><button className="profile-button"><div className="avatar tiny">{doctor.initials}</div><div><strong>{doctor.name}</strong><span>Mi perfil</span></div><MoreHorizontal size={18} /></button></div>
+      <div className="sidebar-bottom"><div className="privacy-note"><ShieldCheck size={17} /><div><strong>Entorno privado</strong><span>Acceso profesional</span></div></div><button className="profile-button" onClick={handleLogout} title="Cerrar sesión"><div className="avatar tiny">{doctor.initials}</div><div><strong>{doctor.name}</strong><span>Cerrar sesión</span></div><LockKeyhole size={17} /></button></div>
     </aside>
     {mobileNav && <div className="scrim" onClick={() => setMobileNav(false)} />}
     <main className="main-area">
@@ -155,7 +177,7 @@ export default function App() {
               section === "Pacientes" ? <PatientsPage patients={visiblePatients} search={search} setSearch={setSearch} onNew={() => setShowPatientForm(true)} onOpen={setSelectedPatient} /> :
                 section === "Consultas" ? <ConsultationsPage consultations={consultations} patients={patients} onOpen={c => { setActiveConsultation(c); setShowConsultation(true); }} onRectify={setRectify} /> :
                   section === "Documentos" ? <DocumentsPage patients={patients} documents={documents} consultations={consultations} search={documentSearch} setSearch={setDocumentSearch} onUpload={() => openDocumentUpload()} /> :
-                    <SettingsPage doctor={doctor} specialty={specialty} onSwitch={() => setSpecialty(s => s === "Urología" ? "Reumatología" : "Urología")} />}
+                    <SettingsPage doctor={doctor} specialty={specialty} />}
       </div>
       <footer className="footer"><span>Clínica · Demo interactiva</span><span><LockKeyhole size={12} /> Datos ficticios · No utilizar para atención real</span></footer>
     </main>
