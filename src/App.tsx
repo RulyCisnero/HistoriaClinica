@@ -161,8 +161,8 @@ export default function App() {
       <div className="workspace-label">CONSULTORIO</div>
       <div className="doctor-switch">
         <div className={`avatar small ${specialty === "Urología" ? "blue" : "violet"}`}>{doctor.initials}</div>
-        <div className="doctor-copy"><strong>{doctor.name}</strong><span>{doctor.role}</span></div><ChevronDown size={16} />
-      </button>
+        <div className="doctor-copy"><strong>{doctor.name}</strong><span>{doctor.role}</span></div>
+      </div>
       <div className="workspace-label nav-label">MENÚ PRINCIPAL</div>
       <nav className="main-nav">{navItems.map(item => <button key={item.label} className={section === item.label ? "nav-item active" : "nav-item"} onClick={() => go(item.label)}><item.icon size={18} /><span>{item.label}</span>{item.label === "Consultas" && drafts > 0 && <em>{drafts}</em>}</button>)}</nav>
       <div className="sidebar-bottom"><div className="privacy-note"><ShieldCheck size={17} /><div><strong>Entorno privado</strong><span>Acceso profesional</span></div></div><button className="profile-button" onClick={handleLogout} title="Cerrar sesión"><div className="avatar tiny">{doctor.initials}</div><div><strong>{doctor.name}</strong><span>Cerrar sesión</span></div><LockKeyhole size={17} /></button></div>
