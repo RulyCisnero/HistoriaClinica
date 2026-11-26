@@ -37,6 +37,7 @@ export function DocumentUploadModal({
 
   const selectFile = (selected: File | undefined) => {
     setError("");
+    setFile(null);
     if (!selected) return;
     if (!ACCEPTED_TYPES.includes(selected.type)) {
       setError("Formato no permitido. Adjuntá PDF, JPG, PNG o WEBP.");
