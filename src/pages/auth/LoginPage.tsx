@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { ArrowRight, HeartPulse, LockKeyhole, ShieldCheck, Stethoscope } from "lucide-react";
 import type { Specialty } from "../../types";
 
@@ -39,7 +39,7 @@ export function LoginPage({
 
   const account = demoAccounts.find((item) => item.specialty === selected)!;
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (accessCode.trim() !== account.accessCode) {
       setError("La clave ingresada no es correcta.");
